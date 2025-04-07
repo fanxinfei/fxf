@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:;base64,=" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ArcGIS Maps SDK for JavaScript Tutorials: Create a web app using components</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.32/esri/css/main.css">
+    <style>
+        html, body {
+            height: 100%; width: 100%; margin: 0; padding: 0;
+        }
+        #header {
+            height: 50px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        #map-container {
+            position: relative;
+            height: calc(100% - 50px);
+        }
+        #viewDiv {
+            height: 100%;
+            width: calc(100% - 300px);
+            float: right;
+        }
+        #basemap-gallery {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 300px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        /* 新增底图库标题样式 */
+        #basemap-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        .esri-widget {
+            font-family: "Arial", sans-serif;
+        }
+    </style>
+  </head>
+  <body>
+    <script type="module" src="/main.js"></script>
+    <div id="header">WebGIS应用</div>
+    <div id="map-container">
+        <!-- 底图库容器 -->
+        <div id="basemap-gallery">
+            <!-- 新增底图库标题 -->
+            <div id="basemap-title">底图库</div>
+        </div>
+        <!-- 地图容器 -->
+        <div id="viewDiv"></div>
+    </div>
+    <script src="https://js.arcgis.com/4.32/"></script>
+    <script>
+        require([
+            "esri/Map",
+            "esri/views/MapView",
+            "esri/layers/FeatureLayer",
+            "esri/widgets/BasemapGallery",
+            "esri/widgets/Legend",
+            "esri/widgets/ScaleBar",
+            "esri/widgets/Search",
+            "esri/widgets/LayerList",
+            "esri/widgets/Home"
+
+        ], function(Map, MapView, FeatureLayer, BasemapGallery, Legend, ScaleBar, Search, LayerList,Home) {
+            var pointLayerUrl = "https://www.geosceneonline.cn/server/rest/services/Hosted/北京市游玩/FeatureServer/0";
+            var lineLayerUrl = "https://www.geosceneonline.cn/server/rest/services/Hosted/北京市游玩/FeatureServer/1";
+            var polygonLayerUrl = "https://www.geosceneonline.cn/server/rest/services/Hosted/北京市游玩/FeatureServer/2";
+
+            var map = new Map({
+                basemap: "topo-vector",
+                layers: [
+                    new FeatureLayer({
+                        url: polygonLayerUrl,
+                        label: "北京市游玩区域"
+                    }),
+                    new FeatureLayer({
+                        url: lineLayerUrl,
+                        label: "北京市游玩路线"
+                    }),
+                    new FeatureLayer({
+                        url: pointLayerUrl,
+                        label: "北京市游玩位置"
+                    })
+                ]
+            });
+
+            var view = new MapView({
+                container: "viewDiv",
+                map: map,
+                center: [116.3074, 40.1252],
+                zoom: 11
+            });
+
+            var homeBtn = new Home({
+                view: view
+            });
+            view.ui.add(homeBtn, "top-left");
+
+            // 创建底图库并手动添加到容器
+            var basemapGallery = new BasemapGallery({
+                view: view,
+                container: document.getElementById("basemap-gallery")
+            });
+
+            // 添加其他微件
+            var legend = new Legend({
+                view: view
+            });
+            view.ui.add(legend, "bottom-right");
+
+            var scaleBar = new ScaleBar({
+                view: view
+            });
+            view.ui.add(scaleBar, "bottom-left");
+
+            var search = new Search({
+                view: view
+            });
+            view.ui.add(search, "top-right");
+
+            var layerList = new LayerList({
+                view: view,
+                container: document.createElement("div"),
+                dragEnabled: true
+            });
+            view.ui.add(layerList, "top-right");
+        });
+    </script>
+</body>
+</html>
